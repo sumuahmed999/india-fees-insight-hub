@@ -58,6 +58,18 @@ export const students: Student[] = [
     status: 'paid'
   },
   {
+    id: '100',
+    rollNumber: 'CSE00100',
+    name: 'Amir',
+    course: 'B.Tech CSE',
+    year: 3,
+    totalFees: 95000,
+    paidAmount: 95000,
+    pendingAmount: 0,
+    dueDate: '2023-08-15',
+    status: 'paid'
+  },
+  {
     id: '2',
     rollNumber: 'ECE002',
     name: 'Priya Patel',
