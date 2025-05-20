@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { UserPlus, Edit, Trash2, Eye } from "lucide-react";
 import { DashboardHeader } from "@/components/Dashboard/DashboardHeader";
@@ -34,7 +35,11 @@ const StudentsPage = () => {
 
   const handleEditStudent = (student: Student) => {
     setIsEditing(true);
-    setCurrentStudent(student);
+    // Convert the student object to match StudentFormValues type (year as string)
+    setCurrentStudent({
+      ...student,
+      year: student.year.toString() // Convert number to string
+    });
     setIsModalOpen(true);
   };
 
@@ -50,7 +55,12 @@ const StudentsPage = () => {
       // Update existing student
       setStudentsList(
         studentsList.map((student) =>
-          student.id === currentStudent.id ? { ...student, ...formData } : student
+          student.id === currentStudent.id ? {
+            ...student,
+            ...formData,
+            year: parseInt(formData.year), // Convert string to number
+            pendingAmount: formData.totalFees - formData.paidAmount
+          } : student
         )
       );
     } else {
@@ -64,7 +74,7 @@ const StudentsPage = () => {
         rollNumber: formData.rollNumber,
         name: formData.name,
         course: formData.course,
-        year: formData.year,
+        year: parseInt(formData.year), // Convert string to number
         totalFees: formData.totalFees,
         paidAmount: formData.paidAmount,
         pendingAmount: pendingAmount,
