@@ -1,8 +1,7 @@
-
 import { useState } from "react";
 import { UserPlus, Edit, Trash2, Eye } from "lucide-react";
 import { DashboardHeader } from "@/components/Dashboard/DashboardHeader";
-import { students, formatCurrency, getStatusColor } from "@/lib/dummyData";
+import { students, formatCurrency, getStatusColor, Student } from "@/lib/dummyData";
 import { Button } from "@/components/ui/button";
 import { StudentFormModal, StudentFormValues } from "@/components/Students/StudentFormModal";
 import { toast } from "sonner";
@@ -17,7 +16,7 @@ import {
 
 const StudentsPage = () => {
   const [filter, setFilter] = useState("all");
-  const [studentsList, setStudentsList] = useState(students);
+  const [studentsList, setStudentsList] = useState<Student[]>(students);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [currentStudent, setCurrentStudent] = useState<StudentFormValues | undefined>(undefined);
@@ -33,7 +32,7 @@ const StudentsPage = () => {
     setIsModalOpen(true);
   };
 
-  const handleEditStudent = (student: any) => {
+  const handleEditStudent = (student: Student) => {
     setIsEditing(true);
     setCurrentStudent(student);
     setIsModalOpen(true);
@@ -51,14 +50,33 @@ const StudentsPage = () => {
       // Update existing student
       setStudentsList(
         studentsList.map((student) =>
-          student.id === currentStudent.id ? { ...formData, id: student.id } : student
+          student.id === currentStudent.id ? { ...student, ...formData } : student
         )
       );
     } else {
       // Add new student with a generated ID
       const newId = `STU${Math.floor(Math.random() * 10000)}`;
-      setStudentsList([...studentsList, { ...formData, id: newId, pendingAmount: formData.totalFees - formData.paidAmount }]);
+      const pendingAmount = formData.totalFees - formData.paidAmount;
+      
+      // Create a new student with all required properties for the Student type
+      const newStudent: Student = {
+        id: newId,
+        rollNumber: formData.rollNumber,
+        name: formData.name,
+        course: formData.course,
+        year: formData.year,
+        totalFees: formData.totalFees,
+        paidAmount: formData.paidAmount,
+        pendingAmount: pendingAmount,
+        status: formData.status,
+        dueDate: new Date().toISOString().split('T')[0] // Set today's date as dueDate
+      };
+      
+      setStudentsList([...studentsList, newStudent]);
     }
+    
+    toast.success(`Student ${isEditing ? "updated" : "added"} successfully`);
+    setIsModalOpen(false);
   };
 
   return (
